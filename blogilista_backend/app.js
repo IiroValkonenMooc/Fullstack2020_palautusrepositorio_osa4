@@ -9,7 +9,7 @@ const logger = require('./utils/logger')
 
 logger.info('Connecting to', confiq.mongoDbUrl)
 
-mongoose.connect(confiq.mongoDbUrl,{useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(confiq.mongoDbUrl,{ useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         logger.info('connected to MongoDB')
     })
