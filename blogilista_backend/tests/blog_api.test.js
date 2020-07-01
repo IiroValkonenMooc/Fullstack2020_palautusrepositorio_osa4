@@ -157,20 +157,28 @@ describe( 'API POST test', () => {
 })
 
 describe( 'API_DELETE_test', () => {
-    test('GET less blogs after delete', async () => {
+    test('Secon testblog gets removed', async () => {
         const getObject  = await api
             .get('/api/blogs')
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        console.log('getObject.bodyAAAAAAAAAAAAAAAAAAAAAAAA :>> ', api.json(getObject.body) )
+        expect(getObject.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining(
+                    {
+                        title: 'Trust the plan',
+                        author: 'Q',
+                        url: 'www.totallyarealplace.org',
+                        likes: 20
+                    })
+            ])
+        )
 
-        //expect(getObject.body.lenght).toBe(1)
-
-        const getId1 = getObject.body[1].id
+        const authQanonId = getObject.body.find(obj => obj.author === 'Q').id
 
         const deleteObject = await api
-            .delete(`/api/blogs/${getId1}`)
+            .delete(`/api/blogs/${authQanonId}`)
             .expect(202)
 
         const getObjectAfterDel  = await api
@@ -178,8 +186,72 @@ describe( 'API_DELETE_test', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        //expect(getObjectAfterDel.body.lenght).toBe(1)
+        expect(getObjectAfterDel.body).not.toEqual(
+            expect.arrayContaining([
+                expect.objectContaining(
+                    {
+                        title: 'Trust the plan',
+                        author: 'Q',
+                        url: 'www.totallyarealplace.org',
+                        likes: 20
+                    })
+            ])
+        )
     })
+})
+
+describe( 'API_PATCH_test', () => {
+    test('blog data changes on PATCh request', async () => {
+        const getObject  = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        expect(getObject.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining(
+                    {
+                        title: 'Trust the plan',
+                        author: 'Q',
+                        url: 'www.totallyarealplace.org',
+                        likes: 20
+                    })
+            ])
+        )
+
+        const authQanonId = getObject.body.find(obj => obj.author === 'Q').id
+
+        const newQanon = {
+            title: 'Trust the plan',
+            author: 'Qanon',
+            url: 'www.totallyarealplace.org',
+            likes: 777
+        }
+
+        const patchRes = await api
+            .patch(`/api/blogs/${authQanonId}`)
+            .send(newQanon)
+            .expect(202)
+            .expect('Content-Type', /application\/json/)
+
+        const getObjectAfterPatch  = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        expect(getObjectAfterPatch.body).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining(
+                    {
+                        title: 'Trust the plan',
+                        author: 'Qanon',
+                        url: 'www.totallyarealplace.org',
+                        likes: 777
+                    })
+            ])
+        )
+    })
+
 })
 
 afterAll(() => {
