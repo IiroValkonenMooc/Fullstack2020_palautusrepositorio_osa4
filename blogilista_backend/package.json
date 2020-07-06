@@ -11,7 +11,7 @@
     "testBlogsApi": "cross-env NODE_ENV=test jest blog_api.test.js --verbose -t",
     "testOnlyDeleteRoutes": "cross-env NODE_ENV=test jest blog_api.test.js --verbose -t 'API_DELETE_test'",
     "testOnlyPatchRoutes": "cross-env NODE_ENV=test jest blog_api.test.js --verbose -t 'API_PATCH_test'",
-    "testOnlyUserCreate": "cross-env NODE_ENV=test jest user_api.test.js --verbose --runInBand -t"
+    "testOnlyUsers": "cross-env NODE_ENV=test jest user_api.test.js --verbose --runInBand -t"
   },
   "author": "Iiro Valkonen",
   "license": "MIT",

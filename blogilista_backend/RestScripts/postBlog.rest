@@ -3,7 +3,8 @@ content-type: application/json
 
 {
     "title": "test3",
-    "author": "Mansplainer",
-    "url": "true real place",
-    "likes": "-2"
+    "author": "Medicine man",
+    "url": "a place",
+    "likes": "-2",
+    "userId": "5f00c71aa884342afc18d89b"
 }

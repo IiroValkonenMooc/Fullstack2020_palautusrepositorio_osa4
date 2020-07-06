@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blogModel')
+const User = require('../models/userModel')
 
 const api = supertest(app)
 
@@ -20,10 +21,27 @@ const initialBloglist = [
     }
 ]
 
+const testUser = {
+    name: 'Qanon',
+    username: 'Q',
+    password: 'test'
+}
+
+let testUserId = undefined
+
 beforeEach( async () => {
+    await User.deleteMany({})
+    const userObject = new User(testUser)
+    await userObject.save()
+
     await Blog.deleteMany({})
 
+    const defUser = await User.findOne({ username: 'Q' })
+    testUserId = defUser._id
+
+
     for (let blog of initialBloglist) {
+        blog.user = defUser._id
         let blogObject = new Blog(blog)
         await blogObject.save()
     }
@@ -46,31 +64,41 @@ describe( 'API get test', () => {
 })
 
 describe( 'API POST test', () => {
-    const postTestObject = {
+
+    let postTestObject = {
         title: 'Sending post requests',
         author: 'Test man',
         url: 'Someplacemagical',
         likes: 9000
     }
 
-    const postTestObjectMissingLikes = {
+    let postTestObjectMissingLikes = {
         title: 'Sending post requests without likes',
         author: 'Medicine man',
         url: 'NotHere.org'
     }
 
-    const postTestObjectMissingTitle = {
+    let postTestObjectMissingTitle = {
         author: 'Presidude',
         url: 'NotHere.org'
     }
 
-    const postTestObjectMissingUrl = {
+    let postTestObjectMissingUrl = {
         title: 'Forgetting to put urls',
         author: 'Male Man man',
         likes: 3
     }
 
-    test('POST returns right body', async () => {
+    let postTestObjectMissingUser = {
+        title: 'Forgetting to put urls',
+        author: 'Male Man man',
+        likes: 3
+    }
+
+
+    test.only('POST returns right body', async () => {
+        postTestObject.user = testUserId
+
         const retObject = await api
             .post('/api/blogs')
             .send(postTestObject)
@@ -139,7 +167,7 @@ describe( 'API POST test', () => {
         )
     })
 
-    test('POSTing blogs without title or url result in status 400 bad request', async () => {
+    test('POSTing blogs without title, url or user result in status 400 bad request', async () => {
         const retObjectNoTitle = await api
             .post('/api/blogs')
             .send(postTestObjectMissingTitle)
@@ -150,6 +178,13 @@ describe( 'API POST test', () => {
         const retObjectNoUrl = await api
             .post('/api/blogs')
             .send(postTestObjectMissingUrl)
+            .expect(400)
+
+        expect(retObjectNoUrl.status).toBe(400)
+
+        const retObjectNoUser = await api
+            .post('/api/blogs')
+            .send(postTestObjectMissingUser)
             .expect(400)
 
         expect(retObjectNoUrl.status).toBe(400)
