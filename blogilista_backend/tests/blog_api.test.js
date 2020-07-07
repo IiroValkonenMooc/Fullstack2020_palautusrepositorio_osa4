@@ -96,7 +96,7 @@ describe( 'API POST test', () => {
     }
 
 
-    test.only('POST returns right body', async () => {
+    test('POST returns right body', async () => {
         postTestObject.user = testUserId
 
         const retObject = await api
@@ -131,6 +131,8 @@ describe( 'API POST test', () => {
     })
 
     test('POSTing blogs can be done without setting likes', async () => {
+        postTestObjectMissingLikes.user = testUserId
+
         const retObject = await api
             .post('/api/blogs')
             .send(postTestObjectMissingLikes)
@@ -147,6 +149,8 @@ describe( 'API POST test', () => {
     })
 
     test('POSTed blog without likes can be found with GET', async () => {
+        postTestObjectMissingLikes.user = testUserId
+
         const retObject = await api
             .post('/api/blogs')
             .send(postTestObjectMissingLikes)
