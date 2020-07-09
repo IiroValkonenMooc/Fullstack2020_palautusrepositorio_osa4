@@ -3,6 +3,8 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blogModel')
 const User = require('../models/userModel')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const api = supertest(app)
 
@@ -21,30 +23,52 @@ const initialBloglist = [
     }
 ]
 
-const testUser = {
+let testUser = {
     name: 'Qanon',
     username: 'Q',
-    password: 'test'
+    password: 'test',
+    addedBlogs: []
+}
+
+let testWrongUser = {
+    name: 'Mailman',
+    username: 'Male Man',
+    password: 'test2',
+    addedBlogs: []
 }
 
 let testUserId = undefined
+let testWrongUserId = undefined
 
 beforeEach( async () => {
+    const saltRounds = 10
+    const testUserPasswordHash = await bcrypt.hash(testUser.password, saltRounds)
+    const testWrongUserPasswordHash = await bcrypt.hash(testWrongUser.password, saltRounds)
+
     await User.deleteMany({})
+    testUser.passwordHash = testUserPasswordHash
     const userObject = new User(testUser)
     await userObject.save()
+    testWrongUser.passwordHash = testWrongUserPasswordHash
+    const wrongUserObject = new User(testWrongUser)
+    await wrongUserObject.save()
 
     await Blog.deleteMany({})
 
-    const defUser = await User.findOne({ username: 'Q' })
+    let defUser = await User.findOne({ username: 'Q' })
     testUserId = defUser._id
 
+    const defWrongUser = await User.findOne({ username: 'Male Man' })
+    testWrongUserId = defWrongUser._id
 
     for (let blog of initialBloglist) {
         blog.user = defUser._id
         let blogObject = new Blog(blog)
-        await blogObject.save()
+        const savedBlog = await blogObject.save()
+        defUser.addedBlogs.push(savedBlog.id)
     }
+
+    await User.findByIdAndUpdate(defUser._id, defUser)
 })
 
 describe( 'API get test', () => {
@@ -61,6 +85,24 @@ describe( 'API get test', () => {
 
         expect(blogs.body[0].id).toBeDefined()
     })
+})
+
+describe( 'Login tests', () => {
+    test('Login can be done', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+
+        const decodedToken = jwt.verify(auth.body.token, process.env.SECRET)
+        expect(decodedToken.username).toBe('Q')
+    })
+
 })
 
 describe( 'API POST test', () => {
@@ -97,11 +139,24 @@ describe( 'API POST test', () => {
 
 
     test('POST returns right body', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+
         postTestObject.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObject)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
 
         expect(retObject.body).toHaveProperty('title', 'Sending post requests')
         expect(retObject.body).toHaveProperty('author', 'Test man')
@@ -110,8 +165,21 @@ describe( 'API POST test', () => {
     })
 
     test('POSTed object can be found with GET', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+
+        postTestObject.user = testUserId
+
         const retObject = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObject)
 
         const getObject = await api
@@ -131,10 +199,20 @@ describe( 'API POST test', () => {
     })
 
     test('POSTing blogs can be done without setting likes', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
         postTestObjectMissingLikes.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObjectMissingLikes)
 
         expect(retObject.body).toEqual(
@@ -149,10 +227,20 @@ describe( 'API POST test', () => {
     })
 
     test('POSTed blog without likes can be found with GET', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
         postTestObjectMissingLikes.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObjectMissingLikes)
 
         const getObject = await api
@@ -172,8 +260,22 @@ describe( 'API POST test', () => {
     })
 
     test('POSTing blogs without title, url or user result in status 400 bad request', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        postTestObjectMissingTitle.user = testUserId
+        postTestObjectMissingUrl.user = testUserId
+
+
         const retObjectNoTitle = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObjectMissingTitle)
             .expect(400)
 
@@ -181,6 +283,7 @@ describe( 'API POST test', () => {
 
         const retObjectNoUrl = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObjectMissingUrl)
             .expect(400)
 
@@ -188,6 +291,7 @@ describe( 'API POST test', () => {
 
         const retObjectNoUser = await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(postTestObjectMissingUser)
             .expect(400)
 
@@ -196,7 +300,7 @@ describe( 'API POST test', () => {
 })
 
 describe( 'API_DELETE_test', () => {
-    test('Secon testblog gets removed', async () => {
+    test('Second testblog gets removed and its removed from user addedBlogs too', async () => {
         const getObject  = await api
             .get('/api/blogs')
             .expect(200)
@@ -216,8 +320,20 @@ describe( 'API_DELETE_test', () => {
 
         const authQanonId = getObject.body.find(obj => obj.author === 'Q').id
 
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        const blogToDelete = await Blog.find({ title: 'Trust the plan' })
+
         const deleteObject = await api
             .delete(`/api/blogs/${authQanonId}`)
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .expect(202)
 
         const getObjectAfterDel  = await api
@@ -236,6 +352,34 @@ describe( 'API_DELETE_test', () => {
                     })
             ])
         )
+
+        const user = await User.findOne({ username: 'Q' })
+        expect(user.addedBlogs).not.toEqual(
+            expect.arrayContaining([ blogToDelete._id ])
+        )
+    })
+
+    test('Wrong user cant delete blogs', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Male Man',
+                password: 'test2'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        console.log('auth :>> ', auth);
+
+        const blogToDelete = await Blog.findOne({ title: 'Trust the plan' })
+
+        const deleteObject = await api
+            .delete(`/api/blogs/${blogToDelete._id}`)
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+
+        expect(deleteObject.body).toEqual({ error: 'invalid user' })
     })
 })
 
@@ -267,8 +411,18 @@ describe( 'API_PATCH_test', () => {
             likes: 777
         }
 
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
         const patchRes = await api
             .patch(`/api/blogs/${authQanonId}`)
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
             .send(newQanon)
             .expect(202)
             .expect('Content-Type', /application\/json/)
@@ -291,6 +445,34 @@ describe( 'API_PATCH_test', () => {
         )
     })
 
+    test('Wrong user cant modify blogs', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Male Man',
+                password: 'test2'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        const blogToModify = await Blog.findOne({ title: 'Trust the plan' })
+
+        const newBlog = {
+            title: 'Trust the plan',
+            author: 'Qanon',
+            url: 'www.totallyarealplace.org',
+            likes: 777
+        }
+
+        const modifyObject = await api
+            .delete(`/api/blogs/${blogToModify._id}`)
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
+            .send(newBlog)
+            .expect(401)
+            .expect('Content-Type', /application\/json/)
+
+        expect(modifyObject.body).toEqual({ error: 'invalid user' })
+    })
 })
 
 afterAll(() => {

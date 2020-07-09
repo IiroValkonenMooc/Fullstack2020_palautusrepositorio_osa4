@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
 mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
 const userSchema = mongoose.Schema({
     username: {
@@ -16,7 +17,13 @@ const userSchema = mongoose.Schema({
     passwordHash:{
         type: String,
         //required: true //Hajoaa testauksen aikana jos tehdään tämä validointi. En ymmärrä :(
-    }
+    },
+    addedBlogs: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Blog'
+        }
+    ]
 })
 
 userSchema.set('toJSON', {

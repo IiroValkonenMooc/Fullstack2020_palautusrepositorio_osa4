@@ -5,19 +5,29 @@ const loginRouter = express.Router()
 const User = require('../models/userModel')
 
 loginRouter.post('/', async (request, response) => {
-    console.log('asd')
     const user = await User.findOne({ username: request.body.username })
 
-    const passwordCorrect = (user === null)
+    const passwordCorrect = user === null
         ? false
         : await bcrypt.compare(request.body.password, user.passwordHash)
+    // let passwordCorrect = false
+    // if(!user === null){
+    //     passwordCorrect = await bcrypt.compare(request.body.password, user.passwordHash)
+    // }
 
-    if(!(user && passwordCorrect)){
-        response.status(401).json(
-            {
-                error: 'invalid username or password'
-            }
-        )
+    // if(!(passwordCorrect)){
+    //     console.log('tässäääääääääääääääääääääääääää');
+    //     response.status(401).json(
+    //         {
+    //             error: 'invalid username or password'
+    //         }
+    //     )
+    // }
+
+    if (!(user && passwordCorrect)) {
+        return response.status(401).json({
+            error: 'invalid username or password'
+        })
     }
 
     const userForToken = {

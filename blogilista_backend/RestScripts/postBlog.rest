@@ -1,10 +1,11 @@
 POST http://localhost:3001/api/blogs HTTP/1.1
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJpZCI6IjVmMDRkYzJlODMxNGY1MmYwODE2NDE1YSIsImlhdCI6MTU5NDE2Mzg0NH0.dGpLScjghV-BqObDcZGp1DAPvJr46VXvDFGir1GcunA
 
 {
-    "title": "test3",
-    "author": "Medicine man",
-    "url": "a place",
-    "likes": "-2",
-    "userId": "5f00c71aa884342afc18d89b"
+    "title": "TEST with auth middleware fix",
+    "author": "Testguy",
+    "url": "www",
+    "likes": "60120",
+    "user": "5f04dc2e8314f52f0816415a"
 }
