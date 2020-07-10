@@ -369,7 +369,7 @@ describe( 'API_DELETE_test', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        console.log('auth :>> ', auth);
+        console.log('auth :>> ', auth)
 
         const blogToDelete = await Blog.findOne({ title: 'Trust the plan' })
 
