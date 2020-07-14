@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import LoggedInMessage from './components/loggedInMessage'
 import CreateBlogForm from './components/CreateBlogForm'
+import Message from './components/Message';
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -16,6 +17,9 @@ const App = () => {
   const [createBlogTitle, setCreateBlogTitle] = useState('tit')
   const [createBlogAuthor, setCreateBlogAuthor] = useState('auth')
   const [createBlogUrl, setCreateBlogUrl] = useState('url') 
+  const [showMessage, setShowMessage] = useState(false)
+  const [messageText, setMessageText] = useState(false)
+  const [messageRed, setMessageRed] = useState(false)
 
   useEffect(() => {
     const lsName = localStorage.getItem('name')
@@ -65,26 +69,56 @@ const App = () => {
       localStorage.setItem('name', tokenData.login.name)
       setloggedInUsername(tokenData.login.username)
       localStorage.setItem('username', tokenData.login.username)
-      setToken(tokenData.login.token)
-      localStorage.setItem('token', tokenData.login.token)
+      setToken('bearer '+tokenData.login.token)
+      localStorage.setItem('token', 'bearer '+tokenData.login.token)
     }
   }
 
   const handleLogout = () => {
-      setLoggedInName(null)
-      setloggedInUsername(null)
-      setToken(null)
+    setLoggedInName(null)
+    setloggedInUsername(null)
+    setToken(null)
 
-      localStorage.clear()
+    handleMessaheChange('logged out')
+
+    localStorage.clear()
   }
 
-  const handleSubmitBlog = () =>{
+  const handleSubmitBlog = async (event) =>{
+    event.preventDefault()
     
+    const response = await blogService.submitBlog(token, createBlogTitle, createBlogAuthor, createBlogUrl)
+
+    if(response.err === null){
+      const newBlogs = await blogService.getAll()
+      setBlogs(newBlogs)
+    }
+  }
+
+  const handleMessaheChange = async (text, red, timeoutDur) => {
+    let timeout
+    if (timeoutDur) {
+      timeout = timeoutDur
+    } else {
+      timeout = 800
+    }
+
+    console.log('message päälle');
+
+    setMessageText(text)
+    setShowMessage(true)
+    red ? setMessageRed(true) : setMessageRed(false) 
+
+    setTimeout(() => {
+      setShowMessage(false)
+      console.log('message pois');
+    }, timeout)
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Message show={showMessage} message={messageText} messageRed={messageRed} />
       {
         loggedInUserName === null 
           ? < LoginForm
@@ -108,6 +142,7 @@ const App = () => {
           handleCreateTitleChange={handleCreateTitleChange}
           handleCreateAuthorChange={handleCreateAuthorChange}
           handleCreateUrlChange={handleCreateUrlChange}
+          handleSubmitBlog={handleSubmitBlog}
         />
         : null
       }
