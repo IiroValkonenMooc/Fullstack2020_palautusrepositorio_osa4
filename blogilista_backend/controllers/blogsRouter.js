@@ -18,13 +18,15 @@ blogsRouter.post('/', async (request, response) => {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
 
-    const blog = new Blog(request.body)
+    let blog = new Blog(request.body)
 
     let userObjectToModify = await User.findById(decodedToken.id)
 
     if(!userObjectToModify){
         response.status(400).json({ error: 'user invalid' })
     }
+
+    blog.user = decodedToken.id
 
     const blogObject = await blog.save()
 

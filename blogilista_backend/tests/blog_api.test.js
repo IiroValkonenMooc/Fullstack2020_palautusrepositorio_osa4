@@ -149,7 +149,7 @@ describe( 'API POST test', () => {
             .expect('Content-Type', /application\/json/)
 
 
-        postTestObject.user = testUserId
+        //postTestObject.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
@@ -164,6 +164,29 @@ describe( 'API POST test', () => {
         expect(retObject.body).toHaveProperty('likes', 9000)
     })
 
+    test('POST user id is taken from token', async () => {
+        const auth = await api
+            .post('/api/login')
+            .send({
+                username: 'Q',
+                password: 'test'
+            })
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+
+        const retObject = await api
+            .post('/api/blogs')
+            .set('Authorization', `bearer ${auth.body.token.toString()}`)
+            .send(postTestObject)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const foundBlog = Blog.findOne({ title: 'Sending post requests' })
+
+        expect(foundBlog).toBeDefined()
+    })
+
     test('POSTed object can be found with GET', async () => {
         const auth = await api
             .post('/api/login')
@@ -175,7 +198,7 @@ describe( 'API POST test', () => {
             .expect('Content-Type', /application\/json/)
 
 
-        postTestObject.user = testUserId
+        //postTestObject.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
@@ -208,7 +231,7 @@ describe( 'API POST test', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        postTestObjectMissingLikes.user = testUserId
+        //postTestObjectMissingLikes.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
@@ -236,7 +259,7 @@ describe( 'API POST test', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        postTestObjectMissingLikes.user = testUserId
+        //postTestObjectMissingLikes.user = testUserId
 
         const retObject = await api
             .post('/api/blogs')
@@ -269,8 +292,8 @@ describe( 'API POST test', () => {
             .expect(200)
             .expect('Content-Type', /application\/json/)
 
-        postTestObjectMissingTitle.user = testUserId
-        postTestObjectMissingUrl.user = testUserId
+        //postTestObjectMissingTitle.user = testUserId
+        //postTestObjectMissingUrl.user = testUserId
 
 
         const retObjectNoTitle = await api

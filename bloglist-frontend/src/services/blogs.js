@@ -6,4 +6,8 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
+const submitBlog = () => {
+  const request = axios.post
+}
+
 export default { getAll }

@@ -3,9 +3,8 @@ content-type: application/json
 Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJpZCI6IjVmMDRkYzJlODMxNGY1MmYwODE2NDE1YSIsImlhdCI6MTU5NDE2Mzg0NH0.dGpLScjghV-BqObDcZGp1DAPvJr46VXvDFGir1GcunA
 
 {
-    "title": "TEST with auth middleware fix",
+    "title": "TEST with complete backend",
     "author": "Testguy",
     "url": "www",
-    "likes": "60120",
-    "user": "5f04dc2e8314f52f0816415a"
+    "likes": "60120"
 }

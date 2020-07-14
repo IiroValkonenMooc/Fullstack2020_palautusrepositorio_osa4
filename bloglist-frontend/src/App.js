@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import LoggedInMessage from './components/loggedInMessage'
+import CreateBlogForm from './components/CreateBlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,6 +13,9 @@ const App = () => {
   const [token, setToken] = useState(null)
   const [loggedInName, setLoggedInName] = useState(null)
   const [loggedInUserName, setloggedInUsername] = useState(null)
+  const [createBlogTitle, setCreateBlogTitle] = useState('tit')
+  const [createBlogAuthor, setCreateBlogAuthor] = useState('auth')
+  const [createBlogUrl, setCreateBlogUrl] = useState('url') 
 
   useEffect(() => {
     const lsName = localStorage.getItem('name')
@@ -40,6 +44,19 @@ const App = () => {
     setLoginPw(event.target.value)
   }
 
+  const handleCreateTitleChange = (event) => {
+    setCreateBlogTitle(event.target.value)
+  }
+ 
+  const handleCreateAuthorChange = (event) => {
+    setCreateBlogAuthor(event.target.value)
+  }
+
+  const handleCreateUrlChange = (event) => {
+    setCreateBlogUrl(event.target.value)
+  }
+
+
   const handleLogin = async () => {
     const tokenData = await loginService.login(loginName, loginPw)
     console.log('login :>> ', tokenData);
@@ -61,8 +78,13 @@ const App = () => {
       localStorage.clear()
   }
 
+  const handleSubmitBlog = () =>{
+    
+  }
+
   return (
     <div>
+      <h2>blogs</h2>
       {
         loggedInUserName === null 
           ? < LoginForm
@@ -78,8 +100,17 @@ const App = () => {
               handleLogout={handleLogout}
             />
       }
-      
-      <h2>blogs</h2>
+
+      {loggedInUserName !== null
+        ? < CreateBlogForm createBlogTitle={createBlogTitle}
+          createBlogAuthor={createBlogAuthor}
+          createBlogUrl = {createBlogUrl}
+          handleCreateTitleChange={handleCreateTitleChange}
+          handleCreateAuthorChange={handleCreateAuthorChange}
+          handleCreateUrlChange={handleCreateUrlChange}
+        />
+        : null
+      }
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
