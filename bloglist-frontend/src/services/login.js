@@ -10,7 +10,7 @@ const login = async (username, password) => {
 
         return {err: null, login: response.data}
     } catch (e) {
-        return {err: e, login: null}
+        return {err: e.response, login: null}
     }
 }
 

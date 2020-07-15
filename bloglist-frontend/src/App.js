@@ -6,6 +6,7 @@ import CreateBlogForm from './components/CreateBlogForm'
 import Message from './components/Message';
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './App.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -63,14 +64,18 @@ const App = () => {
 
   const handleLogin = async () => {
     const tokenData = await loginService.login(loginName, loginPw)
-    console.log('login :>> ', tokenData);
+    //console.log('login :>> ', tokenData);
     if(tokenData.err ===  null){
+      handleMessaheChange('Login successful')
       setLoggedInName(tokenData.login.name)
       localStorage.setItem('name', tokenData.login.name)
       setloggedInUsername(tokenData.login.username)
       localStorage.setItem('username', tokenData.login.username)
       setToken('bearer '+tokenData.login.token)
       localStorage.setItem('token', 'bearer '+tokenData.login.token)
+    } else {
+      handleMessaheChange('Status:'+tokenData.err.status+' '+tokenData.err.statusText+', '+
+        tokenData.err.data.error, true, 2000)
     }
   }
 
@@ -90,8 +95,11 @@ const App = () => {
     const response = await blogService.submitBlog(token, createBlogTitle, createBlogAuthor, createBlogUrl)
 
     if(response.err === null){
+      handleMessaheChange('New blog added: '+createBlogTitle)
       const newBlogs = await blogService.getAll()
       setBlogs(newBlogs)
+    } else {
+      handleMessaheChange('Blog to add new blog: '+response.err.data.error)
     }
   }
 
@@ -103,22 +111,22 @@ const App = () => {
       timeout = 800
     }
 
-    console.log('message päälle');
+    //console.log('message päälle');
 
+    red ? setMessageRed(true) : setMessageRed(false)
     setMessageText(text)
     setShowMessage(true)
-    red ? setMessageRed(true) : setMessageRed(false) 
-
+     
     setTimeout(() => {
       setShowMessage(false)
-      console.log('message pois');
+      //console.log('message pois');
     }, timeout)
   }
 
   return (
     <div>
       <h2>blogs</h2>
-      <Message show={showMessage} message={messageText} messageRed={messageRed} />
+      <Message show={showMessage} message={messageText} red={messageRed} />
       {
         loggedInUserName === null 
           ? < LoginForm

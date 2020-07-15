@@ -2,11 +2,19 @@ import React from 'react'
 
 const Message = ({show, message, red}) => {
     if(show){
-        return(
+        if(red){
+            return(
+                <div>
+                    <p className="Message-red" >{message}</p>
+                </div>
+            )
+        } else {
+            return(
             <div>
-                <p>{message}</p>
+                <p className="Message-green" >{message}</p>
             </div>
-        )
+            )
+        }
     }
     else{
         return null
