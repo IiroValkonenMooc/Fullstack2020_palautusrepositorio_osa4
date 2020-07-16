@@ -15,9 +15,6 @@ const App = () => {
   const [token, setToken] = useState(null)
   const [loggedInName, setLoggedInName] = useState(null)
   const [loggedInUserName, setloggedInUsername] = useState(null)
-  const [createBlogTitle, setCreateBlogTitle] = useState('tit')
-  const [createBlogAuthor, setCreateBlogAuthor] = useState('auth')
-  const [createBlogUrl, setCreateBlogUrl] = useState('url') 
   const [showMessage, setShowMessage] = useState(false)
   const [messageText, setMessageText] = useState(false)
   const [messageRed, setMessageRed] = useState(false)
@@ -49,19 +46,6 @@ const App = () => {
     setLoginPw(event.target.value)
   }
 
-  const handleCreateTitleChange = (event) => {
-    setCreateBlogTitle(event.target.value)
-  }
- 
-  const handleCreateAuthorChange = (event) => {
-    setCreateBlogAuthor(event.target.value)
-  }
-
-  const handleCreateUrlChange = (event) => {
-    setCreateBlogUrl(event.target.value)
-  }
-
-
   const handleLogin = async () => {
     const tokenData = await loginService.login(loginName, loginPw)
     //console.log('login :>> ', tokenData);
@@ -89,17 +73,16 @@ const App = () => {
     localStorage.clear()
   }
 
-  const handleSubmitBlog = async (event) =>{
-    event.preventDefault()
-    
-    const response = await blogService.submitBlog(token, createBlogTitle, createBlogAuthor, createBlogUrl)
+  const submitNewBlogToDb = async (newBlog) =>{
+    console.log('newBlog :>> ', newBlog);
+    const response = await blogService.submitBlog(token, newBlog.title, newBlog.author, newBlog.url)
 
-    if(response.err === null){
-      handleMessaheChange('New blog added: '+createBlogTitle)
+    if (response.err === null) {
+      handleMessaheChange('New blog added: ' + newBlog.title)
       const newBlogs = await blogService.getAll()
       setBlogs(newBlogs)
     } else {
-      handleMessaheChange('Blog to add new blog: '+response.err.data.error)
+      handleMessaheChange('Blog to add new blog: ' + response.err.data.error)
     }
   }
 
@@ -144,14 +127,9 @@ const App = () => {
       }
 
       {loggedInUserName !== null
-        ? < CreateBlogForm createBlogTitle={createBlogTitle}
-          createBlogAuthor={createBlogAuthor}
-          createBlogUrl = {createBlogUrl}
-          handleCreateTitleChange={handleCreateTitleChange}
-          handleCreateAuthorChange={handleCreateAuthorChange}
-          handleCreateUrlChange={handleCreateUrlChange}
-          handleSubmitBlog={handleSubmitBlog}
-        />
+        ? < CreateBlogForm 
+            submitNewBlogToDb={submitNewBlogToDb}
+          />
         : null
       }
       {blogs.map(blog =>

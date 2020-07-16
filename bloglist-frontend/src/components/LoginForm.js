@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const LoginForm = ({loginName, handleLoginNameChange, loginPw, handleLoginPwChange, handleLogin}) => {
+    
+
     return ( 
     <div>
         <h2>Log into application</h2>
