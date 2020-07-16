@@ -3,9 +3,10 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import LoggedInMessage from './components/loggedInMessage'
 import CreateBlogForm from './components/CreateBlogForm'
-import Message from './components/Message';
+import Message from './components/Message'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Toggleable from './components/Toggleable'
 import './App.css'
 
 const App = () => {
@@ -99,13 +100,17 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <div className='Padded-element'>
+        <h2>blogs</h2>
+      </div>
       <Message show={showMessage} message={messageText} red={messageRed} />
       {
         loggedInUserName === null 
-          ? < LoginForm
-              handleLogin={handleUserLogin} 
-            />
+          ? <Toggleable buttonLabel={'Login'} >
+              < LoginForm
+                handleLogin={handleUserLogin} 
+              />
+            </Toggleable>          
           : 
             < LoggedInMessage 
               loggedInUserName={loggedInUserName}
@@ -115,9 +120,11 @@ const App = () => {
       }
 
       {loggedInUserName !== null
-        ? < CreateBlogForm 
-            submitNewBlogToDb={submitNewBlogToDb}
-          />
+        ? <Toggleable buttonLabel={'send new blog'} >
+            < CreateBlogForm 
+              submitNewBlogToDb={submitNewBlogToDb}
+            />
+        </Toggleable>
         : null
       }
       <div className='Padded-element'>

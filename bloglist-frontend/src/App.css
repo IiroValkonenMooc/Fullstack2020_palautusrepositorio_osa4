@@ -1,3 +1,7 @@
+h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 
 .Message-red {
   color: crimson;
@@ -23,6 +27,32 @@
   margin: 0px;
 }
 
+.Blog-styling {
+  margin: 2px;
+  padding: 5px;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: large;
+  width: fit-content;
+}
+
+.Blog-info-button{
+  margin-left: 10px;
+  height: 30px ;
+}
+
 .Padded-element {
   padding: 10px;
+}
+
+.Margined-element {
+  margin: 5px;
+}
+
+.Padding-none {
+  padding: 0px;
+}
+
+.Margin-none {
+  margin: 0px;
 }
