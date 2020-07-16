@@ -1,24 +1,46 @@
 import React, { useState } from 'react'
 
-const LoginForm = ({loginName, handleLoginNameChange, loginPw, handleLoginPwChange, handleLogin}) => {
-    
+const LoginForm = ({handleLogin}) => {
+    const[username, setUsername]=useState('Test')
+    const[password,setPassword]= useState('testpass')
+
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value)
+    }
+
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+
+        handleLogin(
+            {
+                username: username,
+                password: password
+            }
+        )
+    }
 
     return ( 
-    <div>
-        <h2>Log into application</h2>
-        <div>
-            {'Username'} <br></br>
-            <input type="text" name='username' value={loginName} onChange={handleLoginNameChange} />
-        </div>
-        <div>
-            {'Password'} <br></br>
-            <input type="text" name='password' value={loginPw} onChange={handleLoginPwChange} />
-        </div>
-        <div>
-            <button name='loginbutton' onClick={handleLogin}>
-                Login
-            </button>
-        </div>
+        <div className='Padded-element' >
+            <h2>Log into application</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    {'Username'} <br></br>
+                    <input type="text" name='username' value={username} onChange={handleUsernameChange} />
+                </div>
+                <div>
+                    {'Password'} <br></br>
+                    <input type="text" name='password' value={password} onChange={handlePasswordChange} />
+                </div>
+                <div>
+                    <button type='submit' name='loginbutton'>
+                        Login
+                    </button>
+                </div>
+            </form>
     </div>
     )
 }

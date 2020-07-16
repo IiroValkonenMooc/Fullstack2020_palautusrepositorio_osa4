@@ -10,8 +10,6 @@ import './App.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [loginName, setLoginName] = useState('Test')
-  const [loginPw, setLoginPw] = useState('testpass')
   const [token, setToken] = useState(null)
   const [loggedInName, setLoggedInName] = useState(null)
   const [loggedInUserName, setloggedInUsername] = useState(null)
@@ -38,17 +36,10 @@ const App = () => {
     ) 
   }, [])
 
-  const handleLoginNameChange = (event) => {
-    setLoginName(event.target.value)
-  }
+  const handleUserLogin = async (login) => {
+    console.log('login :>> ', login);
+    const tokenData = await loginService.login(login.username, login.password)
 
-  const handleLoginPwChange = (event) => {
-    setLoginPw(event.target.value)
-  }
-
-  const handleLogin = async () => {
-    const tokenData = await loginService.login(loginName, loginPw)
-    //console.log('login :>> ', tokenData);
     if(tokenData.err ===  null){
       handleMessaheChange('Login successful')
       setLoggedInName(tokenData.login.name)
@@ -113,10 +104,7 @@ const App = () => {
       {
         loggedInUserName === null 
           ? < LoginForm
-              loginName={loginName}
-              handleLoginNameChange={handleLoginNameChange}
-              loginPw={loginPw} handleLoginPwChange={handleLoginPwChange}
-              handleLogin={handleLogin} 
+              handleLogin={handleUserLogin} 
             />
           : 
             < LoggedInMessage 
@@ -132,9 +120,11 @@ const App = () => {
           />
         : null
       }
-      {blogs.map(blog =>
+      <div className='Padded-element'>
+        {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
-      )}
+        )}
+      </div>
     </div>
   )
 }
