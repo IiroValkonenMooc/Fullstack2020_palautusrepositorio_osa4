@@ -61,6 +61,34 @@ blogsRouter.delete('/:id', async (request, response) => {
     response.status(202).end()
 })
 
+blogsRouter.put('/:id', async (request, response) => {
+    const id = request.params.id
+    let dataToUpdate = request.body
+
+    dataToUpdate.user = dataToUpdate.user.id
+
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!request.token || !decodedToken.id) {
+        return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+    const blogToModify = await Blog.findById(id).populate()
+    // if(!(blogToModify.user.toString() === decodedToken.id.toString())){
+    //     return response.status(401).json({ error: 'invalid user' })
+    // }
+
+    if(blogToModify._id.toString() !== id) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.title !== dataToUpdate.title) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.author !== dataToUpdate.author) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.url !== dataToUpdate.url) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.user.toJSON() !== dataToUpdate.user) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.likes + 1 < dataToUpdate.likes) { return response.status(401).json( { error: 'invalid blog' }) }
+
+    await Blog.findByIdAndUpdate(id, dataToUpdate)
+
+    response.status(202).json(dataToUpdate)
+})
+
 blogsRouter.patch('/:id', async (request, response) => {
     const id = request.params.id
     const dataToUpdate = request.body
@@ -71,9 +99,16 @@ blogsRouter.patch('/:id', async (request, response) => {
     }
 
     const blogToModify = await Blog.findById(id)
-    if(!(blogToModify.user.toString() === decodedToken.id.toString())){
-        return response.status(401).json({ error: 'invalid user' })
-    }
+    // if(!(blogToModify.user.toString() === decodedToken.id.toString())){
+    //     return response.status(401).json({ error: 'invalid user' })
+    // }
+
+    if(blogToModify._id !== id) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.title !== dataToUpdate.title) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.author !== dataToUpdate.author) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.url !== dataToUpdate.url) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.user !== dataToUpdate.user) { return response.status(401).json( { error: 'invalid blog' }) }
+    else if(blogToModify.likes + 1 > dataToUpdate.likes) { return response.status(401).json( { error: 'invalid blog' }) }
 
     await Blog.findByIdAndUpdate(id, dataToUpdate)
 

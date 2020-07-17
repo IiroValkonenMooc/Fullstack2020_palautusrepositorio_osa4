@@ -1,10 +1,14 @@
 import React, {useState} from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [viewAll, setViewAll] = useState(false)
 
   const changeShow = () => {
     setViewAll(!viewAll)
+  }
+
+  const handleLikeClick = () => {
+    likeBlog(blog)
   }
 
   console.log('blog :>> ', blog);
@@ -12,7 +16,8 @@ const Blog = ({ blog }) => {
   if(!viewAll){
     return (
       <div className='Blog-styling'>
-        {blog.title} {blog.author}
+        
+        {blog.title} {','} {blog.author}
         <button className='Blog-info-button' onClick={changeShow}>
           view all
         </button>
@@ -20,7 +25,28 @@ const Blog = ({ blog }) => {
     )
   } else {
     return(
-      null
+      <div className='Blog-expanded-styling'>
+        <div>
+          <div>
+            {`Title: ${blog.title}, Author: ${blog.author}`}
+          </div>
+          <div>
+            {`Url: ${blog.url}`}
+          </div>
+          <div>
+            {`Likes: ${blog.likes}`} 
+            <button  className='Blog-like-button' onClick={handleLikeClick}>
+              like
+            </button>
+          </div>
+          <div>
+            {`Added by : ${blog.user.name}`}
+          </div>
+        </div>
+        <button className='Blog-info-button' onClick={changeShow}>
+          hide <br></br> expanded <br></br> info
+        </button>
+      </div>
     )
   }
   

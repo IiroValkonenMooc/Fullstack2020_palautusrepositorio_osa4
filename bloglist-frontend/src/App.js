@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import LoggedInMessage from './components/loggedInMessage'
@@ -17,6 +17,7 @@ const App = () => {
   const [showMessage, setShowMessage] = useState(false)
   const [messageText, setMessageText] = useState(false)
   const [messageRed, setMessageRed] = useState(false)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     const lsName = localStorage.getItem('name')
@@ -42,7 +43,7 @@ const App = () => {
     const tokenData = await loginService.login(login.username, login.password)
 
     if(tokenData.err ===  null){
-      handleMessaheChange('Login successful')
+      handleMessageChange('Login successful')
       setLoggedInName(tokenData.login.name)
       localStorage.setItem('name', tokenData.login.name)
       setloggedInUsername(tokenData.login.username)
@@ -50,7 +51,7 @@ const App = () => {
       setToken('bearer '+tokenData.login.token)
       localStorage.setItem('token', 'bearer '+tokenData.login.token)
     } else {
-      handleMessaheChange('Status:'+tokenData.err.status+' '+tokenData.err.statusText+', '+
+      handleMessageChange('Status:'+tokenData.err.status+' '+tokenData.err.statusText+', '+
         tokenData.err.data.error, true, 2000)
     }
   }
@@ -60,7 +61,7 @@ const App = () => {
     setloggedInUsername(null)
     setToken(null)
 
-    handleMessaheChange('logged out')
+    handleMessageChange('logged out')
 
     localStorage.clear()
   }
@@ -70,15 +71,17 @@ const App = () => {
     const response = await blogService.submitBlog(token, newBlog.title, newBlog.author, newBlog.url)
 
     if (response.err === null) {
-      handleMessaheChange('New blog added: ' + newBlog.title)
+      handleMessageChange('New blog added: ' + newBlog.title)
       const newBlogs = await blogService.getAll()
       setBlogs(newBlogs)
+
+      blogFormRef.current.toggleVisibility()
     } else {
-      handleMessaheChange('Blog to add new blog: ' + response.err.data.error)
+      handleMessageChange('Blog to add new blog: ' + response.err.data.error)
     }
   }
 
-  const handleMessaheChange = async (text, red, timeoutDur) => {
+  const handleMessageChange = async (text, red, timeoutDur) => {
     let timeout
     if (timeoutDur) {
       timeout = timeoutDur
@@ -96,6 +99,21 @@ const App = () => {
       setShowMessage(false)
       //console.log('message pois');
     }, timeout)
+  }
+
+  const handleBlogLike = async (blog) => {
+    const response = await blogService.likeBlog(token, blog)
+    console.log('blog :>> ', blog);
+    console.log('blog liked');
+
+    if (response.err === null) {
+      handleMessageChange(`Blog: ${blog.title} liked`)
+      const newBlogs = await blogService.getAll()
+      setBlogs(newBlogs)
+
+    } else {
+      handleMessageChange('Blog to add new blog: ' + response.err.response.data.error, true)
+    }
   }
 
   return (
@@ -120,7 +138,7 @@ const App = () => {
       }
 
       {loggedInUserName !== null
-        ? <Toggleable buttonLabel={'send new blog'} >
+        ? <Toggleable buttonLabel={'send new blog'} ref={blogFormRef} >
             < CreateBlogForm 
               submitNewBlogToDb={submitNewBlogToDb}
             />
@@ -129,7 +147,7 @@ const App = () => {
       }
       <div className='Padded-element'>
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={handleBlogLike}/>
         )}
       </div>
     </div>

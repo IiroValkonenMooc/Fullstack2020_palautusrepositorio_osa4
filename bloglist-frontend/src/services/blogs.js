@@ -27,8 +27,27 @@ const submitBlog = async (token, title, author, url, setBlogs) => {
 
     return { err: null, response: response}
   } catch (e) {
-    return { err: e, request: null}
+    return { err: e, response: null}
   }
 }
 
-export default { getAll, submitBlog }
+const likeBlog = async (token, blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  let modifiedBlog = blog
+  modifiedBlog.likes += 2
+
+  try {
+    const response = await axios.put(baseUrl+'/'+blog.id, modifiedBlog, config)
+
+    return { err: null, response: response}
+  } catch (e) {
+    console.log('e :>> ', e);
+    return { err: e, response: null}
+  }
+
+}
+
+export default { getAll, submitBlog, likeBlog }
