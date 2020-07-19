@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Message = ({ show, message, red }) => {
   if(show){
@@ -19,6 +20,10 @@ const Message = ({ show, message, red }) => {
   else{
     return null
   }
+}
+
+Message.propTypes = {
+  show: PropTypes.bool.isRequired
 }
 
 export default Message
