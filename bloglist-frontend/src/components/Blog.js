@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-const Blog = ({ blog, likeBlog }) => {
+const Blog = ({ blog, likeBlog, deleteBlog }) => {
   const [viewAll, setViewAll] = useState(false)
 
   const changeShow = () => {
@@ -9,6 +9,10 @@ const Blog = ({ blog, likeBlog }) => {
 
   const handleLikeClick = () => {
     likeBlog(blog)
+  }
+
+  const handleDeleteClick = () => {
+    deleteBlog(blog)
   }
 
   console.log('blog :>> ', blog);
@@ -45,6 +49,9 @@ const Blog = ({ blog, likeBlog }) => {
         </div>
         <button className='Blog-info-button' onClick={changeShow}>
           hide <br></br> expanded <br></br> info
+        </button>
+        <button className='Blog-delete-button' onClick={handleDeleteClick}>
+          delete
         </button>
       </div>
     )

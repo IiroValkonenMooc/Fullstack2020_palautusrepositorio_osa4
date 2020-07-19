@@ -44,17 +44,34 @@ h2 {
   font-size: large;
   width: fit-content;
   display: grid;
+
   grid-template-columns: max-content max-content;
+  grid-template-rows: max-content 20px 20px;
+
+  grid-template-areas: 
+    "info expand"
+    '. .'
+    '.  delete' ;
 }
 
 .Blog-info-button{
   margin-left: 10px;
   height: auto ;
+  background-color: greenyellow;
 }
 
 .Blog-like-button{
   margin-left: 10px;
   height: auto ;
+}
+
+.Blog-delete-button{
+  grid-area: delete;
+  width: 80px;
+  height: 20px;
+  margin-left: 10px;
+  color: yellow;
+  background-color: brown;
 }
 
 .Padded-element {

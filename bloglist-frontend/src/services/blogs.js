@@ -36,11 +36,17 @@ const likeBlog = async (token, blog) => {
     headers: { Authorization: token },
   }
 
-  let modifiedBlog = blog
-  modifiedBlog.likes += 2
+  const blogToSend = {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    user: blog.user.id,
+    likes: blog.likes+1
+  }
 
   try {
-    const response = await axios.put(baseUrl+'/'+blog.id, modifiedBlog, config)
+    debugger
+    const response = await axios.put(baseUrl+'/'+blog.id, blogToSend, config)
 
     return { err: null, response: response}
   } catch (e) {
@@ -50,4 +56,18 @@ const likeBlog = async (token, blog) => {
 
 }
 
-export default { getAll, submitBlog, likeBlog }
+const deleteBlog = async (token, blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  try {
+    const response = await axios.delete(baseUrl+'/'+blog.id, config)
+    return { err: null, response: response}
+  } catch (e) {
+    console.log('e :>> ', e);
+    return { err: e, response: null}
+  }
+}
+
+export default { getAll, submitBlog, likeBlog, deleteBlog }

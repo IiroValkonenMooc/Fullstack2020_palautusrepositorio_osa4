@@ -112,7 +112,28 @@ const App = () => {
       setBlogs(newBlogs)
 
     } else {
-      handleMessageChange('Blog to add new blog: ' + response.err.response.data.error, true)
+      handleMessageChange('Failed to add new blog: ' + response.err.response.data.error, true)
+    }
+  }
+
+  const handleBlogDelete = async (blog) => {
+    console.log('deleting blog');
+    const confirmResult = window.confirm(`Really delete blog: ${blog.title}`)
+
+    if (confirmResult) {
+
+      const response = await blogService.deleteBlog(token, blog)
+
+      if (response.err === null) {
+        handleMessageChange(`Blog: ${blog.title} deleted`, false, 6000)
+        const newBlogs = await blogService.getAll()
+        setBlogs(newBlogs)
+      } else {
+        handleMessageChange('Failed to delete blog: ' + response.err.response.data.error, true, 6000)
+        const newBlogs = await blogService.getAll()
+        setBlogs(newBlogs)
+      }
+      
     }
   }
 
@@ -146,8 +167,10 @@ const App = () => {
         : null
       }
       <div className='Padded-element'>
-        {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={handleBlogLike}/>
+        {blogs
+          .sort( (a,b) => b.likes-a.likes)
+          .map(blog =>
+          <Blog key={blog.id} blog={blog} likeBlog={handleBlogLike} deleteBlog={handleBlogDelete}/>
         )}
       </div>
     </div>
