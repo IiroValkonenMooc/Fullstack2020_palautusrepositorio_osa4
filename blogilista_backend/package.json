@@ -6,6 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "run-UI": "cd ../bloglist-frontend && npm run start",
     "lint": "eslint .",
     "test": "cross-env NODE_ENV=test jest --verbose",
     "testBlogsApi": "cross-env NODE_ENV=test jest blog_api.test.js --verbose  -t",

@@ -16,7 +16,8 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react", "jest"
+        "react",
+        "jest"
     ],
     "rules": {
         "indent": [
@@ -25,7 +26,7 @@ module.exports = {
         ],
         "linebreak-style": [
             "error",
-            "unix"
+            "windows"
         ],
         "quotes": [
             "error",
@@ -44,7 +45,8 @@ module.exports = {
             "error", { "before": true, "after": true }
         ],
         "no-console": 0,
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "no-unused-vars": 0
     }
   }
   

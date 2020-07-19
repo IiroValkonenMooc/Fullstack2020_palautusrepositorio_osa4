@@ -35,11 +35,11 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    ) 
+    )
   }, [])
 
   const handleUserLogin = async (login) => {
-    console.log('login :>> ', login);
+    console.log('login :>> ', login)
     const tokenData = await loginService.login(login.username, login.password)
 
     if(tokenData.err ===  null){
@@ -66,8 +66,8 @@ const App = () => {
     localStorage.clear()
   }
 
-  const submitNewBlogToDb = async (newBlog) =>{
-    console.log('newBlog :>> ', newBlog);
+  const submitNewBlogToDb = async (newBlog) => {
+    console.log('newBlog :>> ', newBlog)
     const response = await blogService.submitBlog(token, newBlog.title, newBlog.author, newBlog.url)
 
     if (response.err === null) {
@@ -94,7 +94,7 @@ const App = () => {
     red ? setMessageRed(true) : setMessageRed(false)
     setMessageText(text)
     setShowMessage(true)
-     
+
     setTimeout(() => {
       setShowMessage(false)
       //console.log('message pois');
@@ -103,8 +103,8 @@ const App = () => {
 
   const handleBlogLike = async (blog) => {
     const response = await blogService.likeBlog(token, blog)
-    console.log('blog :>> ', blog);
-    console.log('blog liked');
+    // console.log('blog :>> ', blog)
+    // console.log('blog liked')
 
     if (response.err === null) {
       handleMessageChange(`Blog: ${blog.title} liked`)
@@ -117,7 +117,7 @@ const App = () => {
   }
 
   const handleBlogDelete = async (blog) => {
-    console.log('deleting blog');
+    console.log('deleting blog')
     const confirmResult = window.confirm(`Really delete blog: ${blog.title}`)
 
     if (confirmResult) {
@@ -133,7 +133,7 @@ const App = () => {
         const newBlogs = await blogService.getAll()
         setBlogs(newBlogs)
       }
-      
+
     }
   }
 
@@ -144,25 +144,25 @@ const App = () => {
       </div>
       <Message show={showMessage} message={messageText} red={messageRed} />
       {
-        loggedInUserName === null 
+        loggedInUserName === null
           ? <Toggleable buttonLabel={'Login'} >
-              < LoginForm
-                handleLogin={handleUserLogin} 
-              />
-            </Toggleable>          
-          : 
-            < LoggedInMessage 
-              loggedInUserName={loggedInUserName}
-              loggedInName={loggedInName}
-              handleLogout={handleLogout}
+            < LoginForm
+              handleLogin={handleUserLogin}
             />
+          </Toggleable>
+          :
+          < LoggedInMessage
+            loggedInUserName={loggedInUserName}
+            loggedInName={loggedInName}
+            handleLogout={handleLogout}
+          />
       }
 
       {loggedInUserName !== null
         ? <Toggleable buttonLabel={'send new blog'} ref={blogFormRef} >
-            < CreateBlogForm 
-              submitNewBlogToDb={submitNewBlogToDb}
-            />
+          < CreateBlogForm
+            submitNewBlogToDb={submitNewBlogToDb}
+          />
         </Toggleable>
         : null
       }
@@ -170,8 +170,8 @@ const App = () => {
         {blogs
           .sort( (a,b) => b.likes-a.likes)
           .map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={handleBlogLike} deleteBlog={handleBlogDelete}/>
-        )}
+            <Blog key={blog.id} blog={blog} likeBlog={handleBlogLike} deleteBlog={handleBlogDelete}/>
+          )}
       </div>
     </div>
   )

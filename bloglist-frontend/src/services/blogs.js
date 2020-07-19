@@ -25,9 +25,9 @@ const submitBlog = async (token, title, author, url, setBlogs) => {
       }, config
     )
 
-    return { err: null, response: response}
+    return { err: null, response: response }
   } catch (e) {
-    return { err: e, response: null}
+    return { err: e, response: null }
   }
 }
 
@@ -45,13 +45,12 @@ const likeBlog = async (token, blog) => {
   }
 
   try {
-    debugger
     const response = await axios.put(baseUrl+'/'+blog.id, blogToSend, config)
 
-    return { err: null, response: response}
+    return { err: null, response: response }
   } catch (e) {
-    console.log('e :>> ', e);
-    return { err: e, response: null}
+    console.log('e :>> ', e)
+    return { err: e, response: null }
   }
 
 }
@@ -63,10 +62,10 @@ const deleteBlog = async (token, blog) => {
 
   try {
     const response = await axios.delete(baseUrl+'/'+blog.id, config)
-    return { err: null, response: response}
+    return { err: null, response: response }
   } catch (e) {
-    console.log('e :>> ', e);
-    return { err: e, response: null}
+    console.log('e :>> ', e)
+    return { err: e, response: null }
   }
 }
 
