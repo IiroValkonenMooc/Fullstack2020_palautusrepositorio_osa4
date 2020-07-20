@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
-import { prettyDOM } from '@testing-library/dom';
+import { prettyDOM } from '@testing-library/dom'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
@@ -25,7 +25,7 @@ describe('<Blog />', () => {
     mockDelete = jest.fn()
 
     component = render(
-      <Blog blog={testBlog} />
+      <Blog blog={testBlog} likeBlog={ mockLike }  deleteBlog={ mockDelete } />
     )
   })
 
@@ -66,8 +66,6 @@ describe('<Blog />', () => {
     const button = component.container.querySelector('.Blog-info-button')
     fireEvent.click(button)
 
-    console.log('pretty :>> ', prettyDOM(component.container))
-
     const authorElement = component.getByText('Title: Blog on testing components, Author: Testman')
     expect(authorElement).toBeDefined()
     const urlElement = component.getByText('Url: www.nothere.org/asd')
@@ -76,5 +74,18 @@ describe('<Blog />', () => {
     expect(likesElement).toBeDefined()
     const userElement = component.getByText('Added by: Q')
     expect(userElement).toBeDefined()
+  })
+
+  test('Like-button call like-event', () => {
+    const expandInfoButton = component.container.querySelector('.Blog-info-button')
+    fireEvent.click(expandInfoButton)
+
+    expect(mockLike.mock.calls).toHaveLength(0)
+
+    const likeButton = component.container.querySelector('.Blog-like-button')
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+
+    expect(mockLike.mock.calls).toHaveLength(2)
   })
 })

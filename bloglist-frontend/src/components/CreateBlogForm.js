@@ -35,18 +35,18 @@ const CreateBlogForm = ({ submitNewBlogToDb }) => {
 
 
   return (
-    <form onSubmit={handleSubmit} className='Padded-element'>
+    <form onSubmit={handleSubmit} id='blogForm' className='Padded-element'>
       <div>
         {'title:'}
-        <input type='text' value={title} onChange={handleTitleChange} />
+        <input id='titleTextBox' type='text' value={title} onChange={handleTitleChange} />
       </div>
       <div>
         {'author:'}
-        <input type='text' value={author} onChange={handleAuthorChange} ></input>
+        <input id='authorTextBox' type='text' value={author} onChange={handleAuthorChange} ></input>
       </div>
       <div>
         {'url:'}
-        <input type='text' value={url} onChange={handleUrlChange} ></input>
+        <input id='urlTextBox' type='text' value={url} onChange={handleUrlChange} ></input>
       </div>
       <div>
         <button type='submit' >
