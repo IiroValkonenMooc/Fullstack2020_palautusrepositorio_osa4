@@ -20,7 +20,7 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
   if(!viewAll){
     return (
       <div className='Blog-styling'>
-        {blog.title} {','} {blog.author}
+        {`${blog.title}, ${blog.author}`}
         <button className='Blog-info-button' onClick={changeShow}>
           view all
         </button>
@@ -43,7 +43,7 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
             </button>
           </div>
           <div>
-            {`Added by : ${blog.user.name}`}
+            {`Added by: ${blog.user.username}`}
           </div>
         </div>
         <button className='Blog-info-button' onClick={changeShow}>
