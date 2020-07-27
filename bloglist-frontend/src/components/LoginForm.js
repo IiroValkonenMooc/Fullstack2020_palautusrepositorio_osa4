@@ -27,7 +27,7 @@ const LoginForm = ({ handleLogin }) => {
   return (
     <div className='Padded-element' >
       <h2>Log into application</h2>
-      <form onSubmit={handleSubmit}>
+      <form  id='loginForm' onSubmit={handleSubmit}>
         <div>
           {'Username'} <br></br>
           <input type="text" name='username' value={username} onChange={handleUsernameChange} />
@@ -38,7 +38,7 @@ const LoginForm = ({ handleLogin }) => {
         </div>
         <div>
           <button type='submit' name='loginbutton'>
-                        Login
+            Login
           </button>
         </div>
       </form>
