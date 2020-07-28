@@ -52,7 +52,7 @@ const App = () => {
       localStorage.setItem('token', 'bearer '+tokenData.login.token)
     } else {
       handleMessageChange('Status:'+tokenData.err.status+' '+tokenData.err.statusText+', '+
-        tokenData.err.data.error, true, 2000)
+        tokenData.err.data.error, true, 4000)
     }
   }
 

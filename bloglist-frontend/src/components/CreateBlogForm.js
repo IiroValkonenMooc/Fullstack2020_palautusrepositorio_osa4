@@ -49,7 +49,7 @@ const CreateBlogForm = ({ submitNewBlogToDb }) => {
         <input id='urlTextBox' type='text' value={url} onChange={handleUrlChange} ></input>
       </div>
       <div>
-        <button type='submit' >
+        <button id='submitBlogButton' type='submit' >
                         create
         </button>
       </div>
