@@ -111,7 +111,7 @@ describe('loggedIntests', function () {
     cy.contains('Failed to delete blog: invalid user')
   })
 
-  it.only('Blogs are in order by likes', function () {
+  it('Blogs are in order by likes', function () {
     cy.contains('send new blog').click()
     cy.get('#titleTextBox').clear().type('Profecy')
     cy.get('#authorTextBox').clear().type('Q')
